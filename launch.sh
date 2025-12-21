@@ -8,7 +8,6 @@ TIMEOUT_TIME=5
 
 
 
-
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
@@ -47,20 +46,21 @@ run_test_range() {
     for ((i=START; i<=END; i++)); do
         print_header $i
         
-        (timeout ${TIMEOUT_TIME}s valgrind --quiet --leak-check=full --error-exitcode=42 ./tester $i) > /dev/null 2> valgrind_tmp.log
+        LOG=$(timeout ${TIMEOUT_TIME}s valgrind --quiet --leak-check=full --error-exitcode=42 ./tester $i 2>&1 1>/dev/null)
         STATUS=$?
+        
+        echo "$LOG" > valgrind_tmp.log
 
         if [ $STATUS -eq 0 ]; then
             echo -n -e "$i:${GREEN}[OK]${NC} "
             ((PASSED++))
         
         elif [ $STATUS -eq 42 ]; then
-            
             if grep -qE "Invalid|Uninitialised" valgrind_tmp.log; then
                 echo -n -e "$i:${RED}[MEM ERR]${NC} "
                 echo "-------------------------------------" >> tests_log.log
                 echo "Test ID: $i" >> tests_log.log
-                echo "Result:  INVALID MEMORY ACCESS" >> tests_log.log
+                echo "Result:  INVALID MEMORY ACCESS (Read/Write/Uninit)" >> tests_log.log
                 cat valgrind_tmp.log >> tests_log.log
                 echo "-------------------------------------" >> tests_log.log
             else
@@ -72,7 +72,6 @@ run_test_range() {
             fi
 
         elif [ $STATUS -eq 139 ]; then
-            
             echo -n -e "$i:${RED}[CRASH]${NC} "
             echo "-------------------------------------" >> tests_log.log
             echo "Test ID: $i" >> tests_log.log

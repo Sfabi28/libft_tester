@@ -32,7 +32,6 @@ int main(int argc, char **argv)
     else if (n <= 300) test_memcmp(n);
     else if (n <= 315) test_strnstr(n);
     else if (n <= 330) test_atoi(n);
-    /////////
     else if (n <= 340) test_calloc(n);
     else if (n <= 360) test_strdup(n);
 

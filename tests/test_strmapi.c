@@ -1,4 +1,4 @@
-#include "header.h"
+#include "../header.h"
 
 char mapi_test_func(unsigned int i, char c) { (void)i; return (c + 1); }
 char mapi_test_func_idx(unsigned int i, char c) { return (c + i); }

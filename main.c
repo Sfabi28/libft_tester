@@ -4,10 +4,7 @@
 int main(int argc, char **argv)
 {
     if (argc != 2)
-    {
-        printf("Usage: ./tester <test_id>\n");
         return (1);
-    }
 
     int n = atoi(argv[1]);
 
@@ -58,7 +55,7 @@ int main(int argc, char **argv)
     else if (n <= 620) test_lstmap(n);
 
     else
-        printf("Test ID non valido!\n");
+        return (1);
 
     return (0);
 }

@@ -1,4 +1,4 @@
-#include "header.h"
+#include "../header.h"
 
 void striteri_func(unsigned int i, char *c) { (void)i; *c = *c + 1; }
 void striteri_func_idx(unsigned int i, char *c) { *c = *c + i; }

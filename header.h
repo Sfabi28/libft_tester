@@ -1,67 +1,79 @@
 #ifndef HEADER_H
 # define HEADER_H
 
-# include "libft.h"
-
+# include "../libft.h"
 # include <stdio.h>
 # include <string.h>
 # include <stdlib.h>
 # include <ctype.h>
 # include <unistd.h>
+# include <fcntl.h>
+# include <limits.h>
+# include <stdint.h>
 
-# define GREEN "\033[0;32m"
-# define RED "\033[0;31m"
-# define RESET "\033[0m"
 
-# define TEST_INT(func, expected) \
+static inline void write_error_log(int id, const char *msg, const char *expected, const char *got)
+{
+    FILE *f = fopen("tests_log.log", "a");
+    if (f)
+    {
+        fprintf(f, "Error in Test ID: %d\n", id);
+        fprintf(f, "Function: %s\n", msg);
+        fprintf(f, "Expected: [%s]\n", expected ? expected : "NULL");
+        fprintf(f, "Got     : [%s]\n", got ? got : "NULL");
+        fprintf(f, "-------------------------------------\n");
+        fclose(f);
+    }
+}
+
+
+# define TEST_INT(got, expected) \
     do { \
-        int res = func; \
-        printf("%s: ", #func); \
-        if (res == expected) \
-            printf(GREEN "[OK]\n" RESET); \
-        else \
-            printf(RED "[KO]\n" RESET); \
+        int g = (got); \
+        int e = (expected); \
+        if (g != e) { \
+            char sg[20], se[20]; \
+            sprintf(sg, "%d", g); sprintf(se, "%d", e); \
+            write_error_log(n, "INT CHECK", se, sg); \
+            exit(1); \
+        } \
     } while (0)
 
 
-# define TEST_STR(func, expected) \
+# define TEST_STR(got, expected) \
     do { \
-        char *res = func; \
-        printf("%s: ", #func); \
-        if (res && expected && strcmp(res, expected) == 0) \
-            printf(GREEN "[OK]\n" RESET); \
-        else if (!res && !expected) \
-            printf(GREEN "[OK]\n" RESET); \
-        else \
-            printf(RED "[KO]\n" RESET); \
+        char *g = (got); \
+        char *e = (expected); \
+        if ((!g && e) || (g && !e) || (g && e && strcmp(g, e) != 0)) { \
+            write_error_log(n, "STR CHECK", e, g); \
+            exit(1); \
+        } \
     } while (0)
 
-# define TEST_MEM(func, expected, n) \
+
+# define TEST_MEM(got, expected, len) \
     do { \
-        void *res = func; \
-        printf("%s (%zu bytes): ", #func, (size_t)n); \
-        if (memcmp(res, expected, n) == 0) \
-            printf(GREEN "[OK]\n" RESET); \
-        else \
-            printf(RED "[KO]\n" RESET); \
+        if (memcmp(got, expected, len) != 0) { \
+            write_error_log(n, "MEM CHECK", "Memory match", "Memory mismatch"); \
+            exit(1); \
+        } \
     } while (0)
 
-void test_isalpha(); void test_isdigit(); void test_isalnum();
-void test_isascii(); void test_isprint(); void test_strlen();
-void test_memset();  void test_bzero();   void test_memcpy();
-void test_memmove(); void test_strlcpy(); void test_strlcat();
-void test_toupper(); void test_tolower(); void test_strchr();
-void test_strrchr(); void test_strncmp(); void test_memchr();
-void test_memcmp();  void test_strnstr(); void test_atoi();
-void test_calloc();  void test_strdup();
 
-void test_substr();  void test_strjoin(); void test_strtrim();
-void test_split();   void test_itoa();    void test_strmapi();
-void test_striteri();void test_putchar_fd(); void test_putstr_fd();
-void test_putendl_fd(); void test_putnbr_fd();
-
-void test_lstnew();  void test_lstadd_front(); void test_lstsize();
-void test_lstlast(); void test_lstadd_back();  void test_lstdelone();
-void test_lstclear();void test_lstiter();      void test_lstmap();
+void test_isalpha(int n); void test_isdigit(int n); void test_isalnum(int n);
+void test_isascii(int n); void test_isprint(int n); void test_strlen(int n);
+void test_memset(int n);  void test_bzero(int n);   void test_memcpy(int n);
+void test_memmove(int n); void test_strlcpy(int n); void test_strlcat(int n);
+void test_toupper(int n); void test_tolower(int n); void test_strchr(int n);
+void test_strrchr(int n); void test_strncmp(int n); void test_memchr(int n);
+void test_memcmp(int n);  void test_strnstr(int n); void test_atoi(int n);
+void test_calloc(int n);  void test_strdup(int n);
+void test_substr(int n);  void test_strjoin(int n); void test_strtrim(int n);
+void test_split(int n);   void test_itoa(int n);    void test_strmapi(int n);
+void test_striteri(int n);void test_putchar_fd(int n); void test_putstr_fd(int n);
+void test_putendl_fd(int n); void test_putnbr_fd(int n);
+void test_lstnew(int n);  void test_lstadd_front(int n); void test_lstsize(int n);
+void test_lstlast(int n); void test_lstadd_back(int n);  void test_lstdelone(int n);
+void test_lstclear(int n);void test_lstiter(int n);      void test_lstmap(int n);
 
 #endif

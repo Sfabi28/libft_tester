@@ -1,4 +1,4 @@
-#include "header.h"
+#include "../header.h"
 
 void test_toupper(int n)
 {

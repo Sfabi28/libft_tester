@@ -1,4 +1,4 @@
-#include "header.h"
+#include "../header.h"
 
 void test_strdup(int n)
 {

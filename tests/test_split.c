@@ -1,4 +1,4 @@
-#include "header.h"
+#include "../header.h"
 
 static void ft_free_split(char **split)
 {

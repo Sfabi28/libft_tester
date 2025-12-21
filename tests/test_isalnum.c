@@ -1,3 +1,5 @@
+#include "../header.h"
+
 void test_isalnum(int n)
 {
     if (n == 31)      TEST_INT(ft_isalnum('a'), 1);

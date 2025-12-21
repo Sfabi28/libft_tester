@@ -1,4 +1,4 @@
-#include "header.h"
+#include "../header.h"
 
 
 void test_putstr_fd(int n)

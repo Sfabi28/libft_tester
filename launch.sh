@@ -22,8 +22,8 @@ FUNCTIONS=(
     "316 330 atoi" "331 340 calloc" "341 360 strdup" "361 375 substr"
     "376 390 strjoin" "391 410 strtrim" "411 430 split" "431 450 itoa"
     "451 470 strmapi" "471 490 striteri" "491 500 putchar_fd" "501 510 putstr_fd"
-    "511 520 putendl_fd" "521 530 putnbr_fd" "531 540 lstnew" "541 550 lstadd_front"
-    "551 560 lstsize" "561 570 lstlast" "571 580 lstadd_back" "581 590 lstdelone"
+    "511 520 putendl_fd" "521 530 putnbr_fd" "531 540 lstnew" "541 550 lstaddfront"
+    "551 560 lstsize" "561 570 lstlast" "571 580 lstaddback" "581 590 lstdelone"
     "591 600 lstclear" "601 610 lstiter" "611 620 lstmap"
 )
 

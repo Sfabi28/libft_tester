@@ -23,5 +23,5 @@ void test_itoa(int n)
     else if (n == 447) { res = ft_itoa(-2147483647); TEST_STR(res, "-2147483647"); free(res); }
     else if (n == 448) { res = ft_itoa(111); TEST_STR(res, "111"); free(res); }
     else if (n == 449) { res = ft_itoa(-111); TEST_STR(res, "-111"); free(res); }
-    else if (n == 450) { res = ft_itoa(00042); TEST_STR(res, "42"); free(res); }
+    else if (n == 450) { res = ft_itoa(42); TEST_STR(res, "42"); free(res); }
 }

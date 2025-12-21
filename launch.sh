@@ -1,5 +1,17 @@
 #!/bin/bash
 
+
+
+
+
+TIMEOUT_TIME=5
+
+
+
+
+
+
+
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
@@ -38,7 +50,7 @@ run_test_range() {
     for ((i=START; i<=END; i++)); do
         print_header $i
         
-        valgrind --quiet --leak-check=full --error-exitcode=42 ./tester $i > /dev/null 2> valgrind_tmp.log
+        timeout ${TIMEOUT_TIME}s valgrind --quiet --leak-check=full --error-exitcode=42 ./tester $i > /dev/null 2> valgrind_tmp.log
         STATUS=$?
 
         if [ $STATUS -eq 0 ]; then
@@ -55,6 +67,12 @@ run_test_range() {
             echo "-------------------------------------" >> tests_log.log
             echo "Test ID: $i" >> tests_log.log
             echo "Result:  SEGMENTATION FAULT (CRASH)" >> tests_log.log
+            echo "-------------------------------------" >> tests_log.log
+        elif [ $STATUS -eq 124 ]; then
+            echo -n -e "$i:${RED}[TIMEOUT]${NC} "
+            echo "-------------------------------------" >> tests_log.log
+            echo "Test ID: $i" >> tests_log.log
+            echo "Result:  TIMEOUT (Infinite Loop)" >> tests_log.log
             echo "-------------------------------------" >> tests_log.log
         else
             echo -n -e "$i:${RED}[KO]${NC} "

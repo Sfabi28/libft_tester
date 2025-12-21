@@ -3,9 +3,10 @@
 void test_strnstr(int n)
 {
     char s[] = "lorem ipsum dolor sit amet";
+    
     if (n == 301) TEST_INT(ft_strnstr(s, "ipsum", 15) == s + 6, 1);
     else if (n == 302) TEST_INT(ft_strnstr(s, "ipsum", 10) == NULL, 1);
-    else if (n == 303) TEST_INT(ft_strnstr(s, "dolor", 15) == s + 12, 1);
+    else if (n == 303) TEST_INT(ft_strnstr(s, "dolor", 17) == s + 12, 1); 
     else if (n == 304) TEST_INT(ft_strnstr(s, "dolor", 16) == NULL, 1);
     else if (n == 305) TEST_INT(ft_strnstr(s, "lorem", 15) == s, 1);
     else if (n == 306) TEST_INT(ft_strnstr(s, "", 15) == s, 1);

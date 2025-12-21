@@ -18,7 +18,6 @@ static inline void write_error_log(int id, const char *msg, const char *expected
     if (f)
     {
         fprintf(f, "Error in Test ID: %d\n", id);
-        fprintf(f, "Function: %s\n", msg);
         fprintf(f, "Expected: [%s]\n", expected ? expected : "NULL");
         fprintf(f, "Got     : [%s]\n", got ? got : "NULL");
         fprintf(f, "-------------------------------------\n");

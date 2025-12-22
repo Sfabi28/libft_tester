@@ -12,7 +12,7 @@
 # include <stdint.h>
 
 
-const char *get_function_name(int id) {
+static const char *get_function_name(int id) {
     if (id <= 15) return "isalpha";
     else if (id <= 30) return "isdigit";
     else if (id <= 45) return "isalnum";

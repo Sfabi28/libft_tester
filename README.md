@@ -19,6 +19,14 @@ Ensure that the folder of this tester (`libft_tester`) is located **INSIDE** the
           ├── header.h
           └── tests/
 ```
+
+**Important:** To avoid accidentally committing the tester to your repository, add `gnl_tester/` to your `.gitignore` file:
+
+```bash
+echo "gnl_tester/" >> .gitignore
+```
+
+
 Ensure that the path is right and set a proper timeout time **INSIDE** the `launch.sh` file
 
 ```text

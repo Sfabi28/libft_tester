@@ -20,10 +20,10 @@ Ensure that the folder of this tester (`libft_tester`) is located **INSIDE** the
           └── tests/
 ```
 
-**Important:** To avoid accidentally committing the tester to your repository, add `gnl_tester/` to your `.gitignore` file:
+**Important:** To avoid accidentally committing the tester to your repository, add `libft_tester/` to your `.gitignore` file:
 
 ```bash
-echo "gnl_tester/" >> .gitignore
+echo "libft_tester/" >> .gitignore
 ```
 
 

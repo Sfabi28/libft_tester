@@ -27,6 +27,21 @@ FUNCTIONS=(
     "591 600 lstclear" "601 610 lstiter" "611 620 lstmap"
 )
 
+get_function_name() {
+    local id=$1
+    for func in "${FUNCTIONS[@]}"; do
+        set -- $func
+        local start=$1
+        local end=$2
+        local name=$3
+        if [ $id -ge $start ] && [ $id -le $end ]; then
+            echo "$name"
+            return
+        fi
+    done
+    echo "unknown"
+}
+
 rm -f tests_log.log valgrind_tmp.log
 touch tests_log.log
 
@@ -59,14 +74,14 @@ run_test_range() {
             if grep -qE "Invalid|Uninitialised" valgrind_tmp.log; then
                 echo -n -e "$i:${RED}[MEM ERR]${NC} "
                 echo "-------------------------------------" >> tests_log.log
-                echo "Test ID: $i" >> tests_log.log
+                echo "Test ID: $i (Function: $(get_function_name $i))" >> tests_log.log
                 echo "Result:  INVALID MEMORY ACCESS (Read/Write/Uninit)" >> tests_log.log
                 cat valgrind_tmp.log >> tests_log.log
                 echo "-------------------------------------" >> tests_log.log
             else
                 echo -n -e "$i:${YELLOW}[LEAK]${NC} "
                 echo "-------------------------------------" >> tests_log.log
-                echo "Test ID: $i" >> tests_log.log
+                echo "Test ID: $i (Function: $(get_function_name $i))" >> tests_log.log
                 echo "Result:  MEMORY LEAK DETECTED" >> tests_log.log
                 echo "-------------------------------------" >> tests_log.log
             fi
@@ -74,7 +89,7 @@ run_test_range() {
         elif [ $STATUS -eq 139 ]; then
             echo -n -e "$i:${RED}[CRASH]${NC} "
             echo "-------------------------------------" >> tests_log.log
-            echo "Test ID: $i" >> tests_log.log
+            echo "Test ID: $i (Function: $(get_function_name $i))" >> tests_log.log
             echo "Result:  SEGMENTATION FAULT (CRASH)" >> tests_log.log
             cat valgrind_tmp.log >> tests_log.log
             echo "-------------------------------------" >> tests_log.log
@@ -82,7 +97,7 @@ run_test_range() {
         elif [ $STATUS -eq 124 ]; then
             echo -n -e "$i:${RED}[TIMEOUT]${NC} "
             echo "-------------------------------------" >> tests_log.log
-            echo "Test ID: $i" >> tests_log.log
+            echo "Test ID: $i (Function: $(get_function_name $i))" >> tests_log.log
             echo "Result:  TIMEOUT (Infinite Loop)" >> tests_log.log
             echo "-------------------------------------" >> tests_log.log
         else

@@ -12,15 +12,18 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 MAGENTA='\033[0;35m'
 
+check_dev_mode() {
+    CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
 
-CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+    if [ "$CURRENT_BRANCH" == "dev" ]; then
+        echo -e "\n${MAGENTA}⚠️  WARNING: YOU ARE IN DEVELOPER MODE (dev branch) ⚠️${NC}"
+        echo -e "${MAGENTA}This version might be unstable.${NC}"
+        echo -e "If you are a student, please switch to stable: ${CYAN}git checkout main${NC}\n"
+        sleep 5
+    fi
+}
 
-if [ "$CURRENT_BRANCH" == "dev" ]; then
-    echo -e "\n${MAGENTA}⚠️  WARNING: YOU ARE IN DEVELOPER MODE (dev branch) ⚠️${NC}"
-    echo -e "${MAGENTA}This version might be unstable.${NC}"
-    echo -e "If you are a student, please switch to stable: ${CYAN}git checkout main${NC}\n"
-    sleep 5
-fi
+check_dev_mode
 
 FUNCTIONS=(
     "1 15 isalpha" "16 30 isdigit" "31 45 isalnum" "46 60 isascii"
@@ -233,7 +236,6 @@ compile_tester() {
 
 arg1=$1
 
-check_dev_mode
 check_updates
 
 echo -e "${CYAN}Running Smart-Mode: Valgrind enabled only for allocating functions.${RESET}"

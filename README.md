@@ -1,5 +1,7 @@
 # 🛠️ Libft Tester
 
+![Last Commit](https://img.shields.io/github/last-commit/Sfabi28/libft_tester?style=for-the-badge&color=red)
+
 A comprehensive and strict tester for the 42 **Libft** project.
 
 This tester includes **Smart Memory Leak Detection** via Valgrind. To ensure maximum speed without sacrificing safety, Valgrind is only active for functions that require memory allocation (e.g., `ft_split`, `ft_calloc`). 

@@ -3,14 +3,13 @@
 TIMEOUT_TIME=5
 VALGRIND_TARGETS="calloc strdup substr strjoin strtrim split itoa strmapi lstnew lstdelone lstclear lstmap"
 
-
-
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
 RESET='\033[0m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+CYAN='\033[0;36m'
 MAGENTA='\033[0;35m'
 
 FUNCTIONS=(
@@ -22,8 +21,8 @@ FUNCTIONS=(
     "316 330 atoi" "331 340 calloc" "341 360 strdup" "361 375 substr"
     "376 390 strjoin" "391 410 strtrim" "411 430 split" "431 450 itoa"
     "451 470 strmapi" "471 490 striteri" "491 500 putchar_fd" "501 510 putstr_fd"
-    "511 520 putendl_fd" "521 530 putnbr_fd" "531 540 lstnew" "541 550 lstaddfront"
-    "551 560 lstsize" "561 570 lstlast" "571 580 lstaddback" "581 590 lstdelone"
+    "511 520 putendl_fd" "521 530 putnbr_fd" "531 540 lstnew" "541 550 lstadd_front"
+    "551 560 lstsize" "561 570 lstlast" "571 580 lstadd_back" "581 590 lstdelone"
     "591 600 lstclear" "601 610 lstiter" "611 620 lstmap"
 )
 
@@ -182,30 +181,51 @@ else
     echo -e "${GREEN}Norminette OK!${NC}"
 fi
 
-echo -e "\n${YELLOW}--- Compiling Libft ---${NC}"
-make -C ../ bonus > /dev/null 2>&1 || make -C ../ all > /dev/null
-
-if [ $? -ne 0 ]; then
-    echo -e "${RED}Compilation of libft failed!${NC}"
-    exit 1
-fi
-
-cc -w main.c tests/test_*.c -L../ -lft -I../ -o tester
-if [ $? -ne 0 ]; then echo -e "${RED}Tester Compilation Error!${NC}"; exit 1; fi
+compile_tester() {
+    cc -w main.c tests/test_*.c -L../ -lft -I../ -o tester
+    if [ $? -ne 0 ]; then echo -e "${RED}Tester Compilation Error!${NC}"; exit 1; fi
+}
 
 arg1=$1
-
 echo -e "${CYAN}Running Smart-Mode: Valgrind enabled only for allocating functions.${RESET}"
 
 if [ -z "$arg1" ]; then
+    echo -e "\n${YELLOW}--- Compiling Libft (ALL) ---${NC}"
+    make -C ../ bonus > /dev/null 2>&1 || make -C ../ all > /dev/null
+    if [ $? -ne 0 ]; then echo -e "${RED}Make failed!${NC}"; exit 1; fi
+    
+    compile_tester
     check_allowed_function  
     run_test_range 1 620
+
 else
     FOUND=0
-    check_allowed_function
+    
     for func in "${FUNCTIONS[@]}"; do
         set -- $func
-        if [ "$3" == "$arg1" ] || [ "$3" == "ft_$arg1" ]; then
+        NAME_NO_FT="$3"
+
+        if [ "$NAME_NO_FT" == "$arg1" ] || [ "ft_$NAME_NO_FT" == "$arg1" ]; then
+            
+            if [ ! -f "../libft.a" ]; then
+                 echo -e "${YELLOW}Libft archive not found. Building base first...${NC}"
+                 make -C ../ bonus > /dev/null 2>&1 || make -C ../ all > /dev/null
+            fi
+
+            echo -e "${CYAN}--- Compiling only: ft_${NAME_NO_FT}.c ---${NC}"
+            
+            cc -Wall -Wextra -Werror -c "../ft_${NAME_NO_FT}.c" -o "ft_${NAME_NO_FT}.o" -I../
+            if [ $? -ne 0 ]; then
+                echo -e "${RED}Error compiling ft_${NAME_NO_FT}.c! Check your code.${NC}"
+                rm -f "ft_${NAME_NO_FT}.o"
+                exit 1
+            fi
+
+            ar rcs ../libft.a "ft_${NAME_NO_FT}.o"
+            rm -f "ft_${NAME_NO_FT}.o"
+            
+            compile_tester
+            check_allowed_function 
             run_test_range $1 $2
             FOUND=1
             break

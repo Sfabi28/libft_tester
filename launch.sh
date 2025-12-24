@@ -1,17 +1,13 @@
 #!/bin/bash
 
-
-
-
 TIMEOUT_TIME=5
-
-
-
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
+RESET='\033[0m'
 YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
 
 FUNCTIONS=(
     "1 15 isalpha" "16 30 isdigit" "31 45 isalnum" "46 60 isascii"
@@ -50,6 +46,65 @@ print_header() {
         set -- $func
         if [ $1 -eq $i ]; then echo -e "\n${YELLOW}$3${NC}"; fi
     done
+}
+
+check_allowed_function() {
+    echo -e "\n${BLUE}=== ALLOWED FUNCTIONS CHECK ===${RESET}"
+    
+    WHITELIST_FILE=".whitelist.txt"
+    LIB_PATH="${SOURCE_PATH:-../}"
+    BINARY="${LIB_PATH%/}/libft.a"
+
+    if [ ! -f "$BINARY" ]; then
+        echo -e "${RED}Error: Library file '$BINARY' not found!${RESET}"
+        return
+    fi
+
+    UNDEFINED_FUNCS=$(nm -u "$BINARY" | grep -v ":" | awk '{print $NF}' | sort | uniq)
+    MY_FUNCS=$(nm "$BINARY" | grep -v ":" | grep -E " [Tt] " | awk '{print $NF}' | sed 's/^_//' | sort | uniq)
+
+    VIOLATION=0
+    
+    if [ ! -f "$WHITELIST_FILE" ]; then
+        echo -e "${YELLOW}Warning: $WHITELIST_FILE not found. Skipping check.${RESET}"
+        return
+    fi
+
+    ALLOWED_FUNCS=$(cat "$WHITELIST_FILE")
+
+    for func in $UNDEFINED_FUNCS; do
+        clean_func=${func%%@*}
+        clean_func=${clean_func#_}
+
+        if [[ -z "$clean_func" || "$clean_func" == .* ]]; then
+            continue
+        fi
+
+        if [[ "$clean_func" == "dyld_stub_binder" || "$clean_func" == "gmon_start" || \
+              "$clean_func" == "data_start" || "$clean_func" == "edata" || \
+              "$clean_func" == "end" || "$clean_func" == "bss_start" || \
+              "$clean_func" == "stack_chk_fail" || "$clean_func" == "_stack_chk_fail" ]]; then
+            continue
+        fi
+
+        if echo "$MY_FUNCS" | grep -F -x -q "$clean_func"; then
+            continue
+        fi
+
+        if ! echo "$ALLOWED_FUNCS" | grep -F -x -q "$clean_func"; then
+            echo -e "${RED}Forbidden function used: $clean_func${RESET}"
+            VIOLATION=1
+        fi
+    done
+
+    if [ $VIOLATION -eq 0 ]; then
+        echo -e "No Forbidden Functions. ${GREEN}[OK]${RESET}"
+    else
+        echo -e "${RED}Forbidden functions detected!${RESET}"
+        if [ -n "$LOG_FILE" ]; then
+            echo "FORBIDDEN FUNCTIONS DETECTED" >> "$LOG_FILE"
+        fi
+    fi
 }
 
 run_test_range() {
@@ -123,17 +178,24 @@ else
 fi
 
 echo -e "\n${YELLOW}--- Compiling Libft ---${NC}"
-make -C ../ re > /dev/null
+make -C ../ bonus > /dev/null 2>&1 || make -C ../ all > /dev/null
 
-cc -w main.c tests/test_*.c -L../ -lft -o tester
-if [ $? -ne 0 ]; then echo -e "${RED}Error!${NC}"; exit 1; fi
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Compilation of libft failed!${NC}"
+    exit 1
+fi
+
+cc -w main.c tests/test_*.c -L../ -lft -I../ -o tester
+if [ $? -ne 0 ]; then echo -e "${RED}Tester Compilation Error!${NC}"; exit 1; fi
 
 arg1=$1
 
 if [ -z "$arg1" ]; then
+    check_allowed_function  
     run_test_range 1 620
 else
     FOUND=0
+    check_allowed_function
     for func in "${FUNCTIONS[@]}"; do
         set -- $func
         if [ "$3" == "$arg1" ] || [ "$3" == "ft_$arg1" ]; then

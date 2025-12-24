@@ -12,6 +12,16 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 MAGENTA='\033[0;35m'
 
+
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+
+if [ "$CURRENT_BRANCH" == "dev" ]; then
+    echo -e "\n${MAGENTA}⚠️  WARNING: YOU ARE IN DEVELOPER MODE (dev branch) ⚠️${NC}"
+    echo -e "${MAGENTA}This version might be unstable.${NC}"
+    echo -e "If you are a student, please switch to stable: ${CYAN}git checkout main${NC}\n"
+    sleep 5
+fi
+
 FUNCTIONS=(
     "1 15 isalpha" "16 30 isdigit" "31 45 isalnum" "46 60 isascii"
     "61 75 isprint" "76 90 strlen" "91 115 memset" "116 130 bzero"
@@ -25,6 +35,41 @@ FUNCTIONS=(
     "551 560 lstsize" "561 570 lstlast" "571 580 lstadd_back" "581 590 lstdelone"
     "591 600 lstclear" "601 610 lstiter" "611 620 lstmap"
 )
+
+check_updates() {
+    if [ -d ".git" ]; then
+        echo -n -e "${CYAN}Checking for updates... ${NC}"
+        
+        git fetch origin > /dev/null 2>&1
+        
+        LOCAL=$(git rev-parse HEAD)
+        REMOTE=$(git rev-parse @{u} 2>/dev/null)
+
+        if [ -z "$REMOTE" ]; then
+            return
+        fi
+
+        if [ "$LOCAL" != "$REMOTE" ]; then
+            echo -e "${RED}[UPDATE FOUND]${NC}"
+            echo -e "\n${YELLOW}🚨  A NEW VERSION IS AVAILABLE!  🚨${NC}"
+            echo -e "You are using an old version of the tester."
+            echo -e "Do you want to update it now? (Recommended) [y/N]"
+            read -r -p "Select: " RESPONSE
+            
+            if [[ "$RESPONSE" =~ ^[yY]$ ]]; then
+                echo -e "${GREEN}Downloading updates...${NC}"
+                git pull
+                echo -e "\n${GREEN}✅ Update successful!${NC}"
+                echo -e "${CYAN}Please restart the tester to apply changes.${NC}"
+                exit 0
+            else
+                echo -e "${YELLOW}Update skipped. Continuing with current version...${NC}\n"
+            fi
+        else
+            echo -e "${GREEN}[UP TO DATE]${NC}"
+        fi
+    fi
+}
 
 get_function_name() {
     local id=$1
@@ -187,6 +232,10 @@ compile_tester() {
 }
 
 arg1=$1
+
+check_dev_mode
+check_updates
+
 echo -e "${CYAN}Running Smart-Mode: Valgrind enabled only for allocating functions.${RESET}"
 
 if [ -z "$arg1" ]; then

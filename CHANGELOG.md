@@ -3,7 +3,8 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
-- *work in progress*
+### Added
+- **Docker Support**: Currently working on containerizing the tester to ensure a consistent environment (Ubuntu/Linux) across all platforms.
 
 ## [1.1.0] - 2025-12-24
 ### Added

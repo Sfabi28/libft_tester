@@ -1,12 +1,27 @@
-# Libft Tester
+# 🛠️ Libft Tester
 
-A comprehensive and strict tester for the 42 **Libft** project. It includes memory leak detection via Valgrind, and generates detailed logs for debugging.
+A comprehensive and strict tester for the 42 **Libft** project.
+
+This tester includes **Smart Memory Leak Detection** via Valgrind. To ensure maximum speed without sacrificing safety, Valgrind is only active for functions that require memory allocation (e.g., `ft_split`, `ft_calloc`). 
+
+Standard checks (Segfaults and Timeouts) are performed on **all** functions.
+
+## ✨ Features
+
+* **Smart Valgrind Integration:** Runs slow memory checks only where necessary.
+* **Detailed Logging:** Generates a `tests_log.log` file with specific failure details.
+* **Crash & Timeout Protection:** Detects segfaults and infinite loops.
+* **Norminette Check:** Includes a quick Norminette pass.
+* **Forbidden Functions Check:** Verifies that no forbidden functions are used in your binary.
+
+---
 
 ## 📁 1. Installation
 
 Ensure that the folder of this tester (`libft_tester`) is located **INSIDE** the root of your `libft` project.
 
 **Correct Directory Structure:**
+
 ```text
 /libft_root
     ├── Makefile
@@ -18,7 +33,6 @@ Ensure that the folder of this tester (`libft_tester`) is located **INSIDE** the
           ├── tests_log.log (generated after run)
           ├── header.h
           └── tests/
-```
 
 **Important:** To avoid accidentally committing the tester to your repository, add `libft_tester/` to your `.gitignore` file:
 

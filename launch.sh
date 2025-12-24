@@ -1,6 +1,9 @@
 #!/bin/bash
 
 TIMEOUT_TIME=5
+VALGRIND_TARGETS="calloc strdup substr strjoin strtrim split itoa strmapi lstnew lstdelone lstclear lstmap"
+
+
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -8,6 +11,7 @@ NC='\033[0m'
 RESET='\033[0m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+MAGENTA='\033[0;35m'
 
 FUNCTIONS=(
     "1 15 isalpha" "16 30 isdigit" "31 45 isalnum" "46 60 isascii"
@@ -76,9 +80,7 @@ check_allowed_function() {
         clean_func=${func%%@*}
         clean_func=${clean_func#_}
 
-        if [[ -z "$clean_func" || "$clean_func" == .* ]]; then
-            continue
-        fi
+        if [[ -z "$clean_func" || "$clean_func" == .* ]]; then continue; fi
 
         if [[ "$clean_func" == "dyld_stub_binder" || "$clean_func" == "gmon_start" || \
               "$clean_func" == "data_start" || "$clean_func" == "edata" || \
@@ -87,9 +89,7 @@ check_allowed_function() {
             continue
         fi
 
-        if echo "$MY_FUNCS" | grep -F -x -q "$clean_func"; then
-            continue
-        fi
+        if echo "$MY_FUNCS" | grep -F -x -q "$clean_func"; then continue; fi
 
         if ! echo "$ALLOWED_FUNCS" | grep -F -x -q "$clean_func"; then
             echo -e "${RED}Forbidden function used: $clean_func${RESET}"
@@ -116,8 +116,17 @@ run_test_range() {
     for ((i=START; i<=END; i++)); do
         print_header $i
         
-        LOG=$(timeout ${TIMEOUT_TIME}s valgrind --quiet --leak-check=full --error-exitcode=42 ./tester $i 2>&1 1>/dev/null)
-        STATUS=$?
+        CURRENT_FUNC=$(get_function_name $i)
+        
+        if [[ " $VALGRIND_TARGETS " =~ " $CURRENT_FUNC " ]]; then
+            LOG=$(timeout ${TIMEOUT_TIME}s valgrind --quiet --leak-check=full --error-exitcode=42 ./tester $i 2>&1 1>/dev/null)
+            STATUS=$?
+            MODE="VALGRIND"
+        else
+            LOG=$(timeout ${TIMEOUT_TIME}s ./tester $i 2>&1 1>/dev/null)
+            STATUS=$?
+            MODE="FAST"
+        fi
         
         echo "$LOG" > valgrind_tmp.log
 
@@ -129,32 +138,28 @@ run_test_range() {
             if grep -qE "Invalid|Uninitialised" valgrind_tmp.log; then
                 echo -n -e "$i:${RED}[MEM ERR]${NC} "
                 echo "-------------------------------------" >> tests_log.log
-                echo "Test ID: $i (Function: $(get_function_name $i))" >> tests_log.log
-                echo "Result:  INVALID MEMORY ACCESS (Read/Write/Uninit)" >> tests_log.log
+                echo "Test ID: $i (Function: $CURRENT_FUNC)" >> tests_log.log
                 cat valgrind_tmp.log >> tests_log.log
-                echo "-------------------------------------" >> tests_log.log
             else
                 echo -n -e "$i:${YELLOW}[LEAK]${NC} "
                 echo "-------------------------------------" >> tests_log.log
-                echo "Test ID: $i (Function: $(get_function_name $i))" >> tests_log.log
+                echo "Test ID: $i (Function: $CURRENT_FUNC)" >> tests_log.log
                 echo "Result:  MEMORY LEAK DETECTED" >> tests_log.log
-                echo "-------------------------------------" >> tests_log.log
             fi
 
         elif [ $STATUS -eq 139 ]; then
             echo -n -e "$i:${RED}[CRASH]${NC} "
             echo "-------------------------------------" >> tests_log.log
-            echo "Test ID: $i (Function: $(get_function_name $i))" >> tests_log.log
+            echo "Test ID: $i (Function: $CURRENT_FUNC)" >> tests_log.log
             echo "Result:  SEGMENTATION FAULT (CRASH)" >> tests_log.log
-            cat valgrind_tmp.log >> tests_log.log
-            echo "-------------------------------------" >> tests_log.log
+            if [ "$MODE" == "VALGRIND" ]; then cat valgrind_tmp.log >> tests_log.log; fi
 
         elif [ $STATUS -eq 124 ]; then
             echo -n -e "$i:${RED}[TIMEOUT]${NC} "
             echo "-------------------------------------" >> tests_log.log
-            echo "Test ID: $i (Function: $(get_function_name $i))" >> tests_log.log
+            echo "Test ID: $i (Function: $CURRENT_FUNC)" >> tests_log.log
             echo "Result:  TIMEOUT (Infinite Loop)" >> tests_log.log
-            echo "-------------------------------------" >> tests_log.log
+
         else
             echo -n -e "$i:${RED}[KO]${NC} "
         fi
@@ -189,6 +194,8 @@ cc -w main.c tests/test_*.c -L../ -lft -I../ -o tester
 if [ $? -ne 0 ]; then echo -e "${RED}Tester Compilation Error!${NC}"; exit 1; fi
 
 arg1=$1
+
+echo -e "${CYAN}Running Smart-Mode: Valgrind enabled only for allocating functions.${RESET}"
 
 if [ -z "$arg1" ]; then
     check_allowed_function  

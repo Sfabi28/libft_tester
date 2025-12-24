@@ -89,3 +89,13 @@ Command,Description
    If you have any doubt on the results please contact me on my email (you can find it on my GitHub main page)
 ```
 Happy debugging!🖥️
+
+
+
+## 🛠️ More 42 Tools
+
+Explore my full suite of testers:
+
+[![ft_printf](https://img.shields.io/badge/42-ft__printf-blue?style=for-the-badge&logo=c)](https://github.com/Sfabi28/printf_tester)
+[![get_next_line](https://img.shields.io/badge/42-Get_Next_Line-green?style=for-the-badge&logo=c)](https://github.com/Sfabi28/gnl_tester)
+[![push_swap](https://img.shields.io/badge/42-push__swap-orange?style=for-the-badge&logo=c)](https://github.com/Sfabi28/push_swap_tester)

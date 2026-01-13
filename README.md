@@ -50,16 +50,7 @@ Ensure that the path is right and set a proper timeout time **INSIDE** the `laun
    TIMEOUT_TIME=5
 ```
 
-## 🚀 2. First Run
-
-
-Before running the tester for the first time, you must grant execution permissions to the main script:
-
-```bash
-chmod +x launch.sh
-```
-
-## ⚙️ 3. Usage Commands
+## ⚙️ 2. Usage Commands
 -----------------
 The tester supports different modes and optional integration with Valgrind.
 
@@ -72,7 +63,7 @@ Command,Description
 **⚠️ THE FUNCTION NAME MUST NOT INCLUDE ft_ ⚠️**
 
 
-## 📊 4. Results Legend
+## 📊 3. Results Legend
 -----------------
 ```text
 [OK]      : The printed output and the return value are identical to the original.
@@ -83,7 +74,7 @@ Command,Description
 
 ```
 
-## 📝 5. Use of AI
+## 📝 4. Use of AI
 -----------
 ```text
    Many of the tests were made by AI.

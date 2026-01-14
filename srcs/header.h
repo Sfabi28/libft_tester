@@ -1,7 +1,7 @@
 #ifndef HEADER_H
 # define HEADER_H
 
-# include "../libft.h"
+# include "../../libft.h"
 # include <stdio.h>
 # include <string.h>
 # include <stdlib.h>

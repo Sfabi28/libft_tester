@@ -102,7 +102,7 @@ print_header() {
 check_allowed_function() {
     echo -e "\n${BLUE}=== ALLOWED FUNCTIONS CHECK ===${RESET}"
     
-    WHITELIST_FILE=".whitelist.txt"
+    WHITELIST_FILE="srcs/.whitelist.txt"
     LIB_PATH="${SOURCE_PATH:-../}"
     BINARY="${LIB_PATH%/}/libft.a"
 
@@ -219,6 +219,7 @@ run_test_range() {
         echo -e "${RED}Check 'tests_log.log' for details.${NC}"
     fi
     make -C ../ fclean > /dev/null
+    rm -f tester
 }
 
 echo -e "${YELLOW}--- Norminette ---${NC}"
@@ -230,7 +231,7 @@ else
 fi
 
 compile_tester() {
-    cc -w main.c tests/test_*.c -L../ -lft -I../ -o tester
+    cc -w srcs/main.c srcs/tests/test_*.c -L../ -lft -I../ -o tester
     if [ $? -ne 0 ]; then echo -e "${RED}Tester Compilation Error!${NC}"; exit 1; fi
 }
 

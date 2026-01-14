@@ -2,9 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [1.3.0] - 2026-01-14
 ### Added
-- **Docker Support**: Currently working on containerizing the tester to ensure a consistent environment (Ubuntu/Linux) across all platforms.
+- **Files-handling**: sources put in srcs directory to improve QoL
+
 
 ## [1.2.0] - 2026-01-13
 ### Added

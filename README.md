@@ -30,11 +30,11 @@ Ensure that the folder of this tester (`libft_tester`) is located **INSIDE** the
     ├── libft.h
     ├── *.c (your source files)
     └── libft_tester/       <--- YOU ARE HERE
-          ├── launch.sh
-          ├── main.c
-          ├── tests_log.log (generated after run)
-          ├── header.h
-          └── tests/
+          ├── .launch.sh
+          ├── Makefile
+          ├── CHANGELOG.md
+          ├── README.md
+          └── tests_log.log (generated after run)
 
 **Important:** To avoid accidentally committing the tester to your repository, add `libft_tester/` to your `.gitignore` file:
 ```
@@ -56,8 +56,8 @@ The tester supports different modes and optional integration with Valgrind.
 
 ```text
 Command,Description
-./launch.sh   launches tests on all libft
-./launch.sh "function name"  launches tests only on the function 
+make   launches tests on all libft
+make "function name"  launches tests only on the function 
 ```
 
 **⚠️ THE FUNCTION NAME MUST NOT INCLUDE ft_ ⚠️**
